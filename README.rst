@@ -1,16 +1,16 @@
 ===================================================
-Maxmind GeoIP Python API Reimplementation
+Maxmind GeoIP2 Python API Reimplementation
 ===================================================
 
 Overview
 ------------------------
-This is an alternative Python implementation of Maxmind's GeoIP Python API. By pre-computing a data structure and loading it into memory, IP geo-location look-ups are accelerated. The number of IPs geo-located per second is increased. This is particularly helpful when doing bulk location look-up, such as that needed for server log analysis. The below benchmarks compares the two APIs and shows a speed increase that starts at 111 when N=1 and then appears level off around a factor of 41 when N=10,000.
+This is an alternative Python implementation of Maxmind's GeoIP2 Python API. By pre-computing a data structure and loading it into memory, IP geo-location look-ups are accelerated. The number of IPs geo-located per second is increased. This is particularly helpful when doing bulk location look-up, such as that needed for server log analysis. The below benchmarks compares the two APIs and shows a speed increase that starts at 111 when N=1 and then appears level off around a factor of 41 when N=10,000.
 
 =============== =========================
  number of IPs   ratio of IPs per second
 =============== =========================
     1                   110.6
-    10                  49.18
+    10                  49.2
     100                 51.8
     1000                41.8
     10000               41.2
@@ -25,13 +25,13 @@ You must first obtain version 2 of Maxmind's database in CSV format. The file us
 .. code-block:: python
 
     import precompute
-    
+
     blocks = '/path/GeoLite2-City-Blocks-IPv4.csv'
     locs = '/path/GeoLite2-City-Locations-en.csv'
-    output = '/path/ip_locations.pickle'
+    output = '/path/ip_locations.pickle.gz'
 
-    precompute.createCityData(blocks, locs, output)    
-    
+    precompute.createCityData(blocks, locs, output)
+
 When pickled, the new data set uses around 50MB.
 
 
@@ -43,11 +43,12 @@ Below is some example code for looking up IP address location. The input IP addr
 .. code-block:: python
 
     import lookup
-    
-    input_data = 'ip_locations.pickle'
-    ip_city = lookup.loadPreparedData(input_data)    
+
+    input_data = '/path/ip_locations.pickle.gz'
+    ip_city = lookup.loadPreparedData(input_data)
     ips = ['1.0.0.0', '1.0.0.0',]
-    countries, subdivisions, cities = wsc.getLocations(ip_city, ips)
+    countries, subdivisions, cities = lookup.getLocations(ip_city, ips)
+
 
 References
 ------------------------
